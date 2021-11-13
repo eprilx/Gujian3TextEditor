@@ -42,7 +42,7 @@ namespace Gujian3TextEditor
         static string inputTXT = "";
         static string outputPath = "";
         static string command = "";
-        static string ExePath = Process.GetCurrentProcess().ProcessName;
+        static string ExeName = Process.GetCurrentProcess().ProcessName;
         static void Main(string[] args)
         {
             string ToolVersion;
@@ -63,13 +63,6 @@ namespace Gujian3TextEditor
             Thread.CurrentThread.CurrentUICulture = culture;
             StreamHelpers.DefaultEncoding = Encoding.UTF8;
 
-            if( args.Length == 0)
-            {
-                Console.WriteLine("Please run in cmd");
-                Console.WriteLine("Press any key to exit...");
-                Console.ReadKey();
-                return;
-            }
             var p = new OptionSet()
             {
                 {"e|extract", "Extract String",
@@ -136,9 +129,9 @@ namespace Gujian3TextEditor
 
             void ShowHelp(OptionSet p)
             {
-                if (command == null)
+                if (command == "")
                     PrintCredit();
-                Console.Write("\nUsage: " + ExePath + " ");
+                Console.Write("\nUsage: " + ExeName + " ");
                 switch (command)
                 {
                     case "extract":
@@ -159,11 +152,11 @@ namespace Gujian3TextEditor
                 {
                     case "extract":
                         Console.WriteLine("\nExample:");
-                        Console.WriteLine(ExePath + " -e -i gujian3_text.bin");
+                        Console.WriteLine(ExeName + " -e -i gujian3_text.bin");
                         break;
                     case "pack":
                         Console.WriteLine("\nExample:");
-                        Console.WriteLine(ExePath + " -p -i gujian3_text.bin -t gujian3_text.bin.txt");
+                        Console.WriteLine(ExeName + " -p -i gujian3_text.bin -t gujian3_text.bin.txt");
                         break;
                 }
                 //if (command == "")
@@ -181,7 +174,7 @@ namespace Gujian3TextEditor
             void PrintCredit()
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.Write("\n" + ExePath + " v" + ToolVersion);
+                Console.Write("\n" + ExeName + " v" + ToolVersion);
                 Console.WriteLine(" by eprilx");
                 Console.Write("Special thanks to: ");
                 Console.WriteLine("alanm, Kaplas");
