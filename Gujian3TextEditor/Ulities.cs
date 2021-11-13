@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Gibbed.IO;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,6 +26,27 @@ namespace Gujian3TextEditor
 
             }
             return tagList;
+        }
+        public static void CopyBuffer(FileStream @out, FileStream @in, long length, long offset)
+        {
+            @in.Position = offset;
+            long count = length / 0x1000;
+            int remainder = (int)(length % 0x1000);
+            for (uint i = 0; i < count; i++)
+            {
+                @out.WriteBytes(@in.ReadBytes(0x1000));
+            }
+            @out.WriteBytes(@in.ReadBytes(remainder));
+        }
+        public static void CopyBuffer(FileStream @out, FileStream @in, long length)
+        {
+            long count = length / 0x1000;
+            int remainder = (int)(length % 0x1000);
+            for (uint i = 0; i < count; i++)
+            {
+                @out.WriteBytes(@in.ReadBytes(0x1000));
+            }
+            @out.WriteBytes(@in.ReadBytes(remainder));
         }
     }
 }

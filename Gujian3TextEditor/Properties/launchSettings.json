@@ -2,7 +2,7 @@
   "profiles": {
     "Gujian3TextEditor": {
       "commandName": "Project",
-      "commandLineArgs": "gujian3_text.bin"
+      "commandLineArgs": "--extract -i \"gujian3_text.bin\" -o \"gujian3_text.bin.txt\""
     }
   }
 }

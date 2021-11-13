@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mono.Options;
+using System;
 using System.Text;
 using System.IO;
 using Gibbed.IO;
@@ -7,12 +8,17 @@ using System.Reflection;
 using System.Globalization;
 using System.Threading;
 
+using System.Diagnostics;
+
 namespace Gujian3TextEditor
 {
     class Program
     {
-
-        
+        static string inputPath = "";
+        static string inputTXT = "";
+        static string outputPath = "";
+        static string command = "";
+        static string ExePath = Process.GetCurrentProcess().ProcessName;
         static void Main(string[] args)
         {
             string ToolVersion;
@@ -26,58 +32,132 @@ namespace Gujian3TextEditor
                 ToolVersion = "1.0.0";
             }
 
-            StreamHelpers.DefaultEncoding = Encoding.UTF8;
             // Change current culture
             CultureInfo culture;
             culture = CultureInfo.CreateSpecificCulture("en-US");
             Thread.CurrentThread.CurrentCulture = culture;
             Thread.CurrentThread.CurrentUICulture = culture;
+            StreamHelpers.DefaultEncoding = Encoding.UTF8;
 
-            if (args.Length > 0)
+            if( args.Length == 0)
             {
-                //string input = args[0];
-                if (args[0] == "-e")
-                {
-                    string input = args[1];
-                    var output = input + ".txt";
-                    BsonData.Extract(input, output);
-                    Done(output);
-                }
-                if(args[0] == "-i")
-                {
-                    string PathOri = args[1];
-                    string PathTXT = args[2];
-                    string PathNew = args[3];
-                    BsonDataPack.Pack(PathOri, PathTXT, PathNew);
-                    Done(PathNew);
-                }
-                if (args[0].EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
-                {
-                    string PathOri = args[0].Remove(args[0].Length - 4);
-                    string PathTXT = args[0];
-                    string PathNew = PathOri + ".new";
-                    BsonDataPack.Pack(PathOri, PathTXT, PathNew);
-                    Done(PathNew);
-                }
-                else
-                {
-                    string input = args[0];
-                    var output = input + ".txt";
-                    BsonData.Extract(input, output);
-                    Done(output);
-                }
+                Console.WriteLine("Please run in cmd");
                 Console.WriteLine("Press any key to exit...");
                 Console.ReadKey();
+                return;
             }
-            else
+            var p = new OptionSet()
             {
+                {"e|extract", "Extract String",
+                v => {command = "extract"; } },
+                {"p|pack", "Pack String",
+                v=> {command = "pack"; } }
+            };
+            p.Parse(args);
 
+            switch (command)
+            {
+                case "extract":
+                    p = new OptionSet() {
+                {"a|all","(optional) Extract all strings",
+                    v => BsonDataRead.ExtractAll = v != null },
+                { "i|input=", "(required) Decrypted text buffer path",
+                    v => inputPath = v },
+                { "o|output=", "(optional) Output text file path",
+                    v => outputPath = v }
+                };
+                    break;
+                case "pack":
+                    p = new OptionSet() {
+                {"i|input=", "(required) Decrypted text buffer path",
+                    v => inputPath = v },
+                {"t|text=", "(required) Text file path",
+                    v => inputTXT = v},
+                {"o|output=",  "(optional) Output file path",
+                    v => outputPath = v }
+                };
+                    break;
             }
+            p.Parse(args);
+
+            if (args.Length == 0 || inputPath == "" || (inputTXT == "" && command == "pack"))
+            {
+                ShowHelp(p);
+                return;
+            }
+
+            try
+            {
+                switch (command)
+                {
+                    case "extract":
+                        if (outputPath == "")
+                            outputPath = inputPath + ".txt";
+                        BsonDataRead.Extract(inputPath, outputPath);
+                        break;
+                    case "pack":
+                        if (outputPath == "")
+                            outputPath = inputPath + ".new";
+                        BsonDataPackString.Pack(inputPath, inputTXT, outputPath);
+                        break;
+                }
+                Done(outputPath);
+            }
+            finally
+            {
+                Console.WriteLine("Press any key to exit...");
+                Console.ReadKey();
+                Environment.Exit(0);
+            }
+
+            void ShowHelp(OptionSet p)
+            {
+                if (command == null)
+                    PrintCredit();
+                Console.Write("\nUsage: " + ExePath + " ");
+                switch (command)
+                {
+                    case "extract":
+                        Console.WriteLine("--extract [OPTIONS]");
+                        break;
+                    case "pack":
+                        Console.WriteLine("--pack [OPTIONS]");
+                        break;
+                    default:
+                        Console.WriteLine("[OPTIONS]");
+                        break;
+                }
+
+                Console.WriteLine("Options:");
+                p.WriteOptionDescriptions(Console.Out);
+
+                switch (command)
+                {
+                    case "extract":
+                        Console.WriteLine("\nExample:");
+                        Console.WriteLine(ExePath + " -e -i gujian3_text.bin");
+                        break;
+                    case "pack":
+                        Console.WriteLine("\nExample:");
+                        Console.WriteLine(ExePath + " -p -i gujian3_text.bin -t gujian3_text.bin.txt");
+                        break;
+                }
+                //if (command == "")
+                //{
+                //    Console.WriteLine("\nExample:");
+                //    Console.WriteLine(ExePath + " --extract --all -p gujian3_text.bin");
+                //    Console.WriteLine(ExePath + " --pack -p gujian3_text.bin -t gujian3_text.bin.txt");
+                //    //Console.WriteLine("\nMore usage: https://github.com/eprilx/");
+                //    //Console.Write("More update: ");
+                //    //Console.WriteLine("https://github.com/eprilx/");
+                //}
+            }
+
 
             void PrintCredit()
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.Write("\n" + System.Diagnostics.Process.GetCurrentProcess().ProcessName + " v" + ToolVersion);
+                Console.Write("\n" + ExePath + " v" + ToolVersion);
                 Console.WriteLine(" by eprilx");
                 Console.Write("Special thanks to: ");
                 Console.WriteLine("alanm, Kaplas");

@@ -8,7 +8,6 @@ using Gibbed.IO;
 
 namespace Gujian3TextEditor
 {
-
     public enum BsonType : sbyte
     {
         Unk0 = 0,
@@ -26,7 +25,7 @@ namespace Gujian3TextEditor
         UShort = 15,
         UInt = 16
     }
-    class BsonData
+    class BsonDataRead
     {
         private static FileStream input;
         private static StreamWriter outputTxt;
@@ -35,18 +34,17 @@ namespace Gujian3TextEditor
         private static string tag = "";
         private static uint countArray;
         private static long offset;
-        private static bool ExtractAll = false;
+        public static bool ExtractAll = false;
 
         internal static void Extract(string PathIn, string PathOut)
         {
-
             input = File.OpenRead(PathIn);
             outputTxt = File.CreateText(PathOut);
             if ((tagList != null) && (!tagList.Any()))
             {
                 ExtractAll = true;
             }
-                ReadHeader();
+            ReadHeader();
             //input.Position = 25680567;
             while (input.Position < input.Length)
             {
@@ -79,12 +77,10 @@ namespace Gujian3TextEditor
                 case BsonType.ByteString:
                     sizeString = input.ReadValueU8();
                     ReadString(sizeString, offset);
-                    //input.ReadString((uint)sizeString, Encoding.UTF8);
                     break;
                 case BsonType.ShortString:
                     sizeString = input.ReadValueU16();
                     ReadString(sizeString, offset);
-                    //input.ReadString((uint)sizeString, Encoding.UTF8);
                     break;
                 case BsonType.Unk0:
                     break;
@@ -135,23 +131,31 @@ namespace Gujian3TextEditor
         static void ReadString(int len, long offset)
         {
             string text = input.ReadString(len);
-            if(tagList.Contains(tag) || ExtractAll == true)
+            if (ExtractAll == true)
             {
-                if (!tagList.Contains(tag))
-                {
+                if (tag == "")
                     tag = "<NoTag>";
-                }
                 if (text != "")
                 {
                     text = text.Replace("\n", "<n>");
                     text = text.Replace("\r", "<r>");
                     outputTxt.WriteLine("{0},{1},{2}", offset, tag, text);
                 }
-                else if (ExtractAll == true)
+                else
                 {
                     outputTxt.WriteLine("{0},{1},{2}", offset, tag, "<NoText>");
                 }
             }
+            else if (tagList.Contains(tag) && tag != "")
+            {
+                if (text != "")
+                {
+                    text = text.Replace("\n", "<n>");
+                    text = text.Replace("\r", "<r>");
+                    outputTxt.WriteLine("{0},{1},{2}", offset, tag, text);
+                }
+            }
+
             if(tagList.Contains(text))
             {
                 tag = text;
@@ -165,26 +169,35 @@ namespace Gujian3TextEditor
             }
         }
     }
-    class BsonDataPack
+    class BsonDataPackString
     {
+        
         private static FileStream inputOri;
         private static StreamReader inputTxt;
         private static FileStream outputNew;
+        private struct LineStruct
+        {
+            internal uint offset;
+            internal string tag;
+            internal string text;
+        }
         internal static void Pack(string PathOri, string PathTXT, string PathNew)
         {
-            if (PathTXT == "")
-            {
-                PathTXT = PathOri + ".txt";
-            }
-            if (PathNew == "")
-            {
-                PathNew = PathOri + ".new";
-            }
+            //if (PathTXT == "")
+            //{
+            //    PathTXT = PathOri + ".txt";
+            //}
+            //if (PathNew == "")
+            //{
+            //    PathNew = PathOri + ".new";
+            //}
             inputOri = File.OpenRead(PathOri);
             inputTxt = File.OpenText(PathTXT);
             outputNew = File.Create(PathNew);
 
             var lines = File.ReadLines(PathTXT);
+            // read text
+            List<LineStruct> listLine = new();
             foreach (string line in lines)
             {
                 string[] splits = line.Split(new[] { ',' }, 3);
@@ -192,8 +205,20 @@ namespace Gujian3TextEditor
                 uint offset = uint.Parse(splits[0]);
                 string tag = splits[1];
                 string text = splits[2];
-
-                WriteBuffer(outputNew, inputOri, (offset - inputOri.Position));
+                listLine.Add(new LineStruct
+                {
+                    offset = uint.Parse(splits[0]),
+                    tag = splits[1],
+                    text = splits[2]
+                });
+            }
+            // sort by offset
+            listLine.Sort((s1, s2) => s1.offset.CompareTo(s2.offset));
+            listLine = listLine.ToList();
+            // write
+            foreach (LineStruct line in listLine)
+            {
+                Ulities.CopyBuffer(outputNew, inputOri, (line.offset - inputOri.Position));
 
                 switch ((BsonType)inputOri.ReadValueS8())
                 {
@@ -204,10 +229,10 @@ namespace Gujian3TextEditor
                         inputOri.ReadBytes(inputOri.ReadValueU16());
                         break;
                 }
-                WriteString(text);
+                WriteString(line.text);
             }
 
-            WriteBuffer(outputNew, inputOri, (inputOri.Length - inputOri.Position));
+            Ulities.CopyBuffer(outputNew, inputOri, (inputOri.Length - inputOri.Position));
             outputNew.Close();
         }
         static void WriteString(string text)
@@ -219,7 +244,7 @@ namespace Gujian3TextEditor
             byte[] bytesText = Encoding.UTF8.GetBytes(text);
             if(bytesText.Length > (uint)0xFFFF)
             {
-                throw new Exception("INVALID LENGTH STRING");
+                throw new Exception("INVALID LENGTH STRING TEXT = " + text);
             }
             if (bytesText.Length < 256)
             {
@@ -232,17 +257,6 @@ namespace Gujian3TextEditor
                 outputNew.WriteValueU16((ushort)bytesText.Length);
             }
             outputNew.WriteBytes(bytesText);
-        }
-
-        static void WriteBuffer(FileStream outputNew, FileStream inputOri, long length)
-        {
-            long count = length / 0x1000;
-            int remainder = (int)(length % 0x1000);
-            for (uint i = 0; i < count; i++)
-            {
-                outputNew.WriteBytes(inputOri.ReadBytes(0x1000));
-            }
-            outputNew.WriteBytes(inputOri.ReadBytes(remainder));
         }
     }
 }
