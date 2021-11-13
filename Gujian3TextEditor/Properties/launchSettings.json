@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Gujian3TextEditor": {
+      "commandName": "Project",
+      "commandLineArgs": "gujian3_text.bin"
+    }
+  }
+}

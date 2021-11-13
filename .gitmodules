@@ -1,0 +1,6 @@
+[submodule "Gujian3TextEditor/Gibbed.IO"]
+	path = Gujian3TextEditor/Gibbed.IO
+	url = https://github.com/gibbed/Gibbed.IO.git
+[submodule "Gujian3TextEditor/NDesk.Options"]
+	path = Gujian3TextEditor/NDesk.Options
+	url = https://github.com/gibbed/NDesk.Options.git
