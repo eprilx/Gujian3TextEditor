@@ -63,19 +63,19 @@ namespace Gujian3TextEditor.Bson
                     text = splits[2]
                 });
             }
-            var outputChinese = File.CreateText("chinese2.txt");
-            Parallel.For(2284295, listLine.Count, i =>
-            {
-                if (listLine[i - 1].text != "prop_base_name" && listLine[i - 1].text != "prop_npc_billboard_name")
-                {
-                    if (Ulities.ContainsUnicodeCharacter(listLine[i].text) == true)
-                    {
-                        outputChinese.WriteLine(lines.ElementAt(i - 1));
-                        outputChinese.WriteLine(lines.ElementAt(i));
-                    }
-                }
-            });
-            outputChinese.Close();
+            //var outputChinese = File.CreateText("chinese2.txt");
+            //Parallel.For(2284295, listLine.Count, i =>
+            //{
+            //    if (listLine[i - 1].text != "prop_base_name" && listLine[i - 1].text != "prop_npc_billboard_name")
+            //    {
+            //        if (Ulities.ContainsUnicodeCharacter(listLine[i].text) == true)
+            //        {
+            //            outputChinese.WriteLine(lines.ElementAt(i - 1));
+            //            outputChinese.WriteLine(lines.ElementAt(i));
+            //        }
+            //    }
+            //});
+            //outputChinese.Close();
             // sort by offset
             listLine.Sort((s1, s2) => s1.offset.CompareTo(s2.offset));
             listLine = listLine.ToList();
