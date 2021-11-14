@@ -50,8 +50,8 @@ Options:
 - Some string can't be edited, because it's not in-game text. So **edit carefully** !
 
 ## Special Thanks
-- [alanm](https://zenhax.com/memberlist.php?mode=viewprofile&u=8736)
-- [Kaplas](https://zenhax.com/memberlist.php?mode=viewprofile&u=5785)
+- [alanm](https://zenhax.com/memberlist.php?mode=viewprofile&u=8736) (Gujian 3 Text Mod)
+- [Kaplas](https://zenhax.com/memberlist.php?mode=viewprofile&u=5785) (find where the decrypted size is stored, [Gujian3Manager](https://github.com/Kaplas80/GuJian3Manager)
 - [Rick Gibbed](https://github.com/gibbed) ([Gibbed.IO](https://github.com/gibbed/Gibbed.IO) library)
 
 ## License
