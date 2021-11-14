@@ -12,8 +12,11 @@ Gujian3TextEditor is a tool used for editing binary json (string only) in Gujian
 
 
 ## Usage
-❄ [**Download the decrypted text buffer from alanm** ](https://zenhax.com/viewtopic.php?f=12&t=14879#p67446)
+❄ **Download the decrypted text buffer from alnm**
 
+[1.2.0](https://zenhax.com/viewtopic.php?f=12&t=14879#p67446)
+
+[1.3.0 (newest steam version)](https://zenhax.com/viewtopic.php?f=12&t=14879&start=20#p67499)
 ```
 Usage: Gujian3TextEditor [OPTIONS]
 Options:
@@ -28,7 +31,7 @@ Options:
   -i, --input=VALUE          (required) Decrypted text buffer path
   -o, --output=VALUE         (optional) Output text file path
 ```
-Example:
+**Example:**
 `Gujian3TextEditor -e -i gujian3_text.bin`
 
 ❄ Pack String
@@ -39,9 +42,12 @@ Options:
   -t, --text=VALUE           (required) Text file path
   -o, --output=VALUE         (optional) Output file path
 ```
-Example:
+**Example:**
 `Gujian3TextEditor -p -i gujian3_text.bin -t gujian3_text.bin.txt`
 
+## Notes
+- Make sure that [Gujian 3 text mod](https://zenhax.com/viewtopic.php?f=12&t=14879&start=20#p67493) is installed to display these text in-game.
+- Some string can't be edited, because it's not in-game text. So **edit carefully** !
 
 ## Special Thanks
 - [alanm](https://zenhax.com/memberlist.php?mode=viewprofile&u=8736)
