@@ -31,8 +31,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Globalization;
 using System.Threading;
-
 using System.Diagnostics;
+using Gujian3TextEditor.Bson;
 
 namespace Gujian3TextEditor
 {
@@ -77,7 +77,7 @@ namespace Gujian3TextEditor
                 case "extract":
                     p = new OptionSet() {
                 {"a|all","(optional) Extract all strings",
-                    v => BsonDataRead.ExtractAll = v != null },
+                    v => BsonDataReader.ExtractAll = v != null },
                 { "i|input=", "(required) Decrypted text buffer path",
                     v => inputPath = v },
                 { "o|output=", "(optional) Output text file path",
@@ -110,7 +110,7 @@ namespace Gujian3TextEditor
                     case "extract":
                         if (outputPath == "")
                             outputPath = inputPath + ".txt";
-                        BsonDataRead.Extract(inputPath, outputPath);
+                        BsonDataReader.Extract(inputPath, outputPath);
                         break;
                     case "pack":
                         if (outputPath == "")

@@ -72,5 +72,11 @@ namespace Gujian3TextEditor
             }
             @out.WriteBytes(@in.ReadBytes(remainder));
         }
+        public static bool ContainsUnicodeCharacter(string input)
+        {
+            const int MaxAnsiCode = 255;
+
+            return input.Any(c => c > MaxAnsiCode);
+        }
     }
 }

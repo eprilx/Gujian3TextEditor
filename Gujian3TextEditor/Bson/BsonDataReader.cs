@@ -24,32 +24,15 @@ SOFTWARE.
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 using Gibbed.IO;
 
-namespace Gujian3TextEditor
+namespace Gujian3TextEditor.Bson
 {
-    public enum BsonType : sbyte
-    {
-        Unk0 = 0,
-        Unk1 = 1,
-        Unk2 = 2,
-        Byte = 3,
-        Short = 4,
-        Int = 5,
-        Long = 6,
-        Float = 7,
-        ByteString = 8,
-        ShortString = 9,
-        Array = 11,
-        Unk13 = 13,
-        UShort = 15,
-        UInt = 16
-    }
-    class BsonDataRead
+    class BsonDataReader
     {
         private static FileStream input;
         private static StreamWriter outputTxt;
@@ -72,7 +55,6 @@ namespace Gujian3TextEditor
             //input.Position = 25680567;
             while (input.Position < input.Length)
             {
-                
                 type = (BsonType)input.ReadValueS8();
                 ReadType(type);
             }
@@ -83,15 +65,15 @@ namespace Gujian3TextEditor
         {
             input.Position = 0;
             var magic = input.ReadValueU32();
-            if (magic != 0xF2060881)
+            if (magic != 0xF2060881 && magic != 0xD5B50981)
             {
-                throw new Exception("INVALID HEADER");
+                //throw new Exception("INVALID HEADER/VERSION");
             }
         }
         internal static void ReadType(BsonType type)
         {
             int sizeString;
-            if ((type != BsonType.ByteString && type != BsonType.ShortString && type != BsonType.Array))
+            if ((type != BsonType.ByteString && type != BsonType.UShortString && type != BsonType.Array))
             {
                 tag = "";
             }
@@ -102,7 +84,7 @@ namespace Gujian3TextEditor
                     sizeString = input.ReadValueU8();
                     ReadString(sizeString, offset);
                     break;
-                case BsonType.ShortString:
+                case BsonType.UShortString:
                     sizeString = input.ReadValueU16();
                     ReadString(sizeString, offset);
                     break;
@@ -129,7 +111,7 @@ namespace Gujian3TextEditor
                     break;
                 case BsonType.Array:
                     countArray = input.ReadValueU32();
-                    if(countArray == 0)
+                    if (countArray == 0)
                     {
                         tag = "";
                     }
@@ -180,7 +162,7 @@ namespace Gujian3TextEditor
                 }
             }
 
-            if(tagList.Contains(text))
+            if (tagList.Contains(text))
             {
                 tag = text;
             }
@@ -191,96 +173,6 @@ namespace Gujian3TextEditor
                     tag = "";
                 }
             }
-        }
-    }
-    class BsonDataPackString
-    {
-        
-        private static FileStream inputOri;
-        private static StreamReader inputTxt;
-        private static FileStream outputNew;
-        private struct LineStruct
-        {
-            internal uint offset;
-            internal string tag;
-            internal string text;
-        }
-        internal static void Pack(string PathOri, string PathTXT, string PathNew)
-        {
-            //if (PathTXT == "")
-            //{
-            //    PathTXT = PathOri + ".txt";
-            //}
-            //if (PathNew == "")
-            //{
-            //    PathNew = PathOri + ".new";
-            //}
-            inputOri = File.OpenRead(PathOri);
-            inputTxt = File.OpenText(PathTXT);
-            outputNew = File.Create(PathNew);
-
-            var lines = File.ReadLines(PathTXT);
-            // read text
-            List<LineStruct> listLine = new();
-            foreach (string line in lines)
-            {
-                string[] splits = line.Split(new[] { ',' }, 3);
-
-                uint offset = uint.Parse(splits[0]);
-                string tag = splits[1];
-                string text = splits[2];
-                listLine.Add(new LineStruct
-                {
-                    offset = uint.Parse(splits[0]),
-                    tag = splits[1],
-                    text = splits[2]
-                });
-            }
-            // sort by offset
-            listLine.Sort((s1, s2) => s1.offset.CompareTo(s2.offset));
-            listLine = listLine.ToList();
-            // write
-            foreach (LineStruct line in listLine)
-            {
-                Ulities.CopyBuffer(outputNew, inputOri, (line.offset - inputOri.Position));
-
-                switch ((BsonType)inputOri.ReadValueS8())
-                {
-                    case BsonType.ByteString:
-                        inputOri.ReadBytes(inputOri.ReadValueU8());
-                        break;
-                    case BsonType.ShortString:
-                        inputOri.ReadBytes(inputOri.ReadValueU16());
-                        break;
-                }
-                WriteString(line.text);
-            }
-
-            Ulities.CopyBuffer(outputNew, inputOri, (inputOri.Length - inputOri.Position));
-            outputNew.Close();
-        }
-        static void WriteString(string text)
-        {
-
-            text = text.Replace("<n>", "\n");
-            text = text.Replace("<r>", "\r");
-            text = text.Replace("<NoText>", "");
-            byte[] bytesText = Encoding.UTF8.GetBytes(text);
-            if(bytesText.Length > (uint)0xFFFF)
-            {
-                throw new Exception("INVALID LENGTH STRING TEXT = " + text);
-            }
-            if (bytesText.Length < 256)
-            {
-                outputNew.WriteByte(0x08);
-                outputNew.WriteValueU8((byte)bytesText.Length);
-            }
-            else
-            {
-                outputNew.WriteByte(0x09);
-                outputNew.WriteValueU16((ushort)bytesText.Length);
-            }
-            outputNew.WriteBytes(bytesText);
         }
     }
 }
