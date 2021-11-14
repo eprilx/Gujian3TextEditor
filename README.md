@@ -12,11 +12,9 @@ Gujian3TextEditor is a tool used for editing binary json (string only) in Gujian
 - ``dotnet build``
 
 ## Usage
-❄ **Download the decrypted text buffer from alanm**
+❄ **[Install/Download Gujian 3 text mod by alanm](https://zenhax.com/viewtopic.php?f=12&t=14879&p=67510#p67511)**
 
-[1.2.0](https://zenhax.com/viewtopic.php?f=12&t=14879#p67446)
-
-[1.3.0 (newest steam version)](https://zenhax.com/viewtopic.php?f=12&t=14879&start=20#p67499)
+Use this tool to extract/pack text.bin and text1302142.bin
 ```
 Usage: Gujian3TextEditor [OPTIONS]
 Options:
@@ -46,7 +44,7 @@ Options:
 `Gujian3TextEditor -p -i gujian3_text.bin -t gujian3_text.bin.txt`
 
 ## Notes
-- Make sure that [Gujian 3 text mod](https://zenhax.com/viewtopic.php?f=12&t=14879&start=20#p67493) is installed to display these text in-game.
+- Make sure that **Gujian 3 text mod** is installed to display these text in-game.
 - Some string can't be edited, because it's not in-game text. So **edit carefully** !
 
 ## Special Thanks
