@@ -9,10 +9,10 @@ Gujian3TextEditor is a tool used for editing binary json (string only) in Gujian
 ## Building from source
 - **[Install .NET 5](https://dotnet.microsoft.com/download/dotnet/5.0)**
 - ``git clone --recurse-submodules https://github.com/eprilx/Gujian3TextEditor.git``
-
+- ``dotnet build``
 
 ## Usage
-❄ **Download the decrypted text buffer from alnm**
+❄ **Download the decrypted text buffer from alanm**
 
 [1.2.0](https://zenhax.com/viewtopic.php?f=12&t=14879#p67446)
 
