@@ -4,7 +4,7 @@ on:
  
 jobs:
 
-  draft-FC2MFTConverter-win:
+  draft-win:
     runs-on: windows-latest
 
     steps:
