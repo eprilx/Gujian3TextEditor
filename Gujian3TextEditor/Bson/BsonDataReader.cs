@@ -94,7 +94,7 @@ namespace Gujian3TextEditor.Bson
                     break;
                 case BsonType.Unk2:
                     break;
-                case BsonType.Byte:
+                case BsonType.SByte:
                     input.ReadValueS8();
                     break;
                 case BsonType.Short:

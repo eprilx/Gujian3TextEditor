@@ -35,7 +35,7 @@ namespace Gujian3TextEditor.Bson
         Unk0 = 0,
         Unk1 = 1,
         Unk2 = 2,
-        Byte = 3,
+        SByte = 3,
         Short = 4,
         Int = 5,
         Long = 6,
