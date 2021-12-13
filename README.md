@@ -1,5 +1,12 @@
+
+# Outdated: please use [Gujian 3 Manager](https://github.com/Kaplas80/GuJian3Manager) for more features and improvements
+
+
 # Gujian3TextEditor
 Gujian3TextEditor is a tool used for editing binary json (string only) in Gujian 3.
+
+
+
 
 ## Installation
 
